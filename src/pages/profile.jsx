@@ -1,0 +1,167 @@
+import { useState } from "react";
+import { AppBar, Toolbar, Container, Card, CardContent,TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText } from "@mui/material";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaBell, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaSignOutAlt } from "react-icons/fa";
+
+const friends = [
+  { name: "Alice Smith", online: true },
+  { name: "Bob Johnson", online: false },
+  { name: "Charlie Brown", online: true },
+  { name: "Diana Miller", online: false }
+];
+
+const onlineUsers = [
+  {id: 1, name: "Emily Clark", image: "https://randomuser.me/api/portraits/women/2.jpg", age: 28, location: "Los Angeles" },
+  {id: 2, name: "Michael Scott", image: "https://randomuser.me/api/portraits/men/3.jpg", age: 35, location: "Scranton" },
+  {id: 3, name: "Sarah Wilson", image: "https://randomuser.me/api/portraits/women/4.jpg", age: 30, location: "New York" },
+  {id: 4, name: "David Lee", image: "https://randomuser.me/api/portraits/men/5.jpg", age: 32, location: "Chicago" },
+  {id: 5, name: "Olivia Martinez", image: "https://randomuser.me/api/portraits/women/6.jpg", age: 26, location: "Miami" },
+  {id: 6, name: "James Anderson", image: "https://randomuser.me/api/portraits/men/7.jpg", age: 29, location: "Seattle" },
+  { id: 7,name: "Sophia Roberts", image: "https://randomuser.me/api/portraits/women/8.jpg", age: 31, location: "Boston" }
+];
+
+function UserProfile() {
+
+    const [likedUsers, setLikedUsers] = useState({});
+    const [dislikedUsers, setDislikedUsers] = useState({});
+
+
+    const handleUserClick = (user) => {
+      alert(`Viewing profile of ${user.name}`);
+    };
+
+  
+    const handleLikes = (event, user) => {
+        event.stopPropagation();
+        setLikedUsers((prev) => ({
+          ...prev,
+          [user.id]: true, // Mark user as liked
+        }));
+        setDislikedUsers((prev) => ({
+          ...prev,
+          [user.id]: false, // Remove dislike if previously disliked
+        }));
+      };
+    
+      const handleDislikes = (event, user) => {
+        event.stopPropagation();
+        setDislikedUsers((prev) => ({
+          ...prev,
+          [user.id]: true, // Mark user as disliked
+        }));
+        setLikedUsers((prev) => ({
+          ...prev,
+          [user.id]: false, // Remove like if previously liked
+        }));
+      };
+      
+  
+    return (
+      <div style={{ width: "100vw" }}>
+        <AppBar position="static" style={{ backgroundColor: "#ff3366" }}>
+          <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6" style={{ fontWeight: "bold" }}>Dating App</Typography>
+            <TextField variant="outlined" placeholder="Search..." size="small" style={{ backgroundColor: "white", borderRadius: "5px" }} />
+            <div>
+              <IconButton color="inherit">
+                <Badge badgeContent={3} color="secondary">
+                  <FaComments size={20} />
+                </Badge>
+              </IconButton>
+              <IconButton color="inherit">
+                <Badge badgeContent={5} color="secondary">
+                  <FaHeart size={20} />
+                </Badge>
+              </IconButton>
+              <IconButton color="inherit">
+                <Badge badgeContent={2} color="secondary">
+                  <FaBell size={20} />
+                </Badge>
+              </IconButton>
+              <Button variant="contained" style={{ backgroundColor: "#fff", color: "#ff3366", marginLeft: "10px" }} startIcon={<FaSignOutAlt />}>
+                Logout
+              </Button>
+            </div>
+          </Toolbar>
+        </AppBar>
+  
+        <Container style={{ display: "flex", justifyContent: "center", flexDirection: "column", width: "100vw", margin: "auto" }}>
+          <Card style={{ textAlign: "center", padding: "20px", borderRadius: "15px", width: "90%", backgroundColor: "#f0f2f5", margin: "auto" }}>
+            <Grid container spacing={2} alignItems="center" justifyContent="space-between">
+              <Grid item xs={12} md={4}>
+                <CardMedia
+                  component="img"
+                  height="250"
+                  image="https://randomuser.me/api/portraits/men/1.jpg"
+                  alt="User Profile"
+                  style={{ borderRadius: "15px", width: "100%", maxWidth: "250px" }}
+                />
+                <Button variant="contained" component="label" style={{ marginTop: "10px", backgroundColor: "#ff3366", color: "white" }} startIcon={<FaCamera />}>
+                  Change Photo
+                  <input type="file" hidden />
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <Typography variant="h3" style={{ fontWeight: "bold" }}>John Doe</Typography>
+                <Typography variant="body1"><FaEnvelope style={{ marginRight: "10px" }} /> johndoe@example.com</Typography>
+                <Typography variant="body1"><FaPhone style={{ marginRight: "10px" }} /> +1 234 567 890</Typography>
+                <Typography variant="body1"><FaMapMarkerAlt style={{ marginRight: "10px" }} /> New York, USA</Typography>
+                <Typography variant="body1"><FaGlobe style={{ marginRight: "10px" }} /> Looking for: Serious Relationship</Typography>
+                <Typography variant="body1"><FaHeart style={{ marginRight: "10px" }} /> Interests: Hiking, Traveling, Music</Typography>
+                <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", marginTop: "15px" }} startIcon={<FaEdit />}>
+                  Edit Profile
+                </Button>
+              </Grid>
+            </Grid>
+  
+            <Divider style={{ margin: "20px 0" }} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <Typography variant="h5" style={{ marginBottom: "10px", fontWeight: "bold" }}>Friends</Typography>
+                <List>
+                  {friends.map((friend, index) => (
+                    <ListItem key={index} >
+                      <FaCircle style={{ color: friend.online ? "green" : "gray", marginRight: "10px" }} />
+                      <ListItemText primary={friend.name}  onClick={() => handleUserClick(friend)}  style={{ cursor: "pointer" }}/>
+                    </ListItem>
+                  ))}
+                </List>
+              </Grid>
+  
+              <Grid item xs={12} md={8}>
+                <Typography variant="h5" style={{ marginBottom: "10px", fontWeight: "bold" }}>Online Users</Typography>
+                <Grid container spacing={2}>
+                  {onlineUsers.map((user, index) => (
+                    <Grid item key={index} xs={6} sm={4} md={3}>
+                      <Card style={{ padding: "10px", textAlign: "center", cursor: "pointer" }} onClick={() => handleUserClick(user)}>
+                        <Avatar src={user.image} style={{ margin: "auto" }} />
+                        <Typography variant="body2" style={{ marginTop: "5px" }}>{user.name}</Typography>
+                        <Typography variant="body2" style={{ marginTop: "5px", color: "gray" }}>{user.age} | {user.location}</Typography>
+                        <div style={{ marginTop: "5px", display: "flex", justifyContent: "center" }}>
+                          <IconButton color="primary"
+                           onClick={(event) => handleLikes(event, user)}
+                           disabled={likedUsers[user.id]} // Disable if liked
+                           >
+                            <FaThumbsUp style={{ color: likedUsers[user.id] ? "gray" : "blue", fontSize:"18px" }}/>
+                          </IconButton>
+                          <IconButton 
+                          color="secondary"
+                           onClick={(event) => handleDislikes(event, user)}
+                           disabled={dislikedUsers[user.id]} // Disable if disliked
+                           >
+                            <FaThumbsDown style={{ color: dislikedUsers[user.id] ? "gray" : "red", fontSize:"18px" }}/>
+                          </IconButton>
+                        </div>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
+          </Card>
+        </Container>
+      </div>
+    );
+  }
+  
+
+export default UserProfile;

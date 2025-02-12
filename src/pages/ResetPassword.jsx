@@ -27,7 +27,7 @@ const ResetPassword = () => {
   return (
     <div style={{width:"100vw", margin:"auto", background:"#f7f7f7"}}>
       <Navigation />
-    <Container maxWidth="sm" style={{ marginTop: "50px", textAlign: "center" }}>
+    <Container maxWidth="sm" style={{ paddingTop: "50px", textAlign: "center" }}>
       <Box 
        sx={{ 
         boxShadow:10, 

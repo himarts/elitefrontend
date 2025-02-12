@@ -19,7 +19,7 @@ function Home() {
 
 return (
   <>
-   <div style={{  minHeight: "100vh", background: "#f7f7f7", color: "#333", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",    width: "100vw", margin:"auto" }}>
+   <div style={{  minHeight: "100%", background: "#f7f7f7", color: "#333", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",    width: "100vw", margin:"auto" }}>
 <Navigation />
       <Container style={{ marginTop: "120px" }}>
         <Typography variant="h2" style={{ fontWeight: "bold", fontSize: "3rem" }}>Find Your Perfect Match</Typography>
@@ -39,7 +39,7 @@ return (
           {users.map((user, index) => (
                <Grid item xs={12} sm={4} key={index}>
                <Card style={{ textAlign: "center", padding: "10px", borderRadius: "15px" }}>
-                 <CardMedia component="img" height="150" width="150" image={user.image} alt={user.firstName} style={{ borderRadius: "10px", objectFit: "cover" }} />
+                 <CardMedia component="img" height="150" width="100" image={user.image} alt={user.firstName} style={{ borderRadius: "10px", objectFit: "cover" }} />
                  <CardContent>
                    <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
                    <Typography variant="body2">{user.country}</Typography>
@@ -63,7 +63,7 @@ return (
           ].map((feature, index) => (
             <Grid item xs={12} sm={4} key={index}>
               <Card style={{ textAlign: "center", padding: "20px", borderRadius: "15px" }}>
-                <feature.icon size={50} style={{ color: "#ff3366", marginBottom: "10px" }} />
+                <feature.icon size={40} style={{ color: "#ff3366", marginBottom: "10px" }} />
                 <CardContent>
                   <Typography variant="h5">{feature.title}</Typography>
                   <Typography>{feature.desc}</Typography>
@@ -101,8 +101,8 @@ return (
             </AccordionDetails>
           </Accordion>
           </Container>
-    
     <Footer />
+    
     </div>
   </>
 )

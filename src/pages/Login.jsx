@@ -15,7 +15,7 @@ const Login = () => {
   return (
     <div style={{width:"100vw", margin:"auto", background:"#f7f7f7"}}>
         <Navigation />
-    <Container maxWidth="xs" style={{ marginTop: "80px", textAlign: "center" }}>
+    <Container maxWidth="xs" style={{ paddingTop: "80px", textAlign: "center" }}>
       <Box 
         sx={{ 
           boxShadow:10, 

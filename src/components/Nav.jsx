@@ -20,7 +20,7 @@ import {Link} from 'react-router-dom';
              <AppBar position="fixed" style={{ background: "#ff3366", boxShadow: "none" }}>
              <Toolbar>
          <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: "bold", marginRight:"40%"}}>
-           ❤️ Dating
+         <Link to="/" style={{fontSize:"23px"}}>❤️ EliteHarmony</Link>  
          </Typography>
        
          {/* Hamburger Menu (Visible on Small Screens) */}
@@ -41,7 +41,7 @@ import {Link} from 'react-router-dom';
            <MenuItem onClick={handleMenuClose}>FAQ</MenuItem>
            <MenuItem onClick={handleMenuClose}> <Link  to="/login">Sign In</Link></MenuItem>
            <MenuItem onClick={handleMenuClose}>
-             <Button variant="contained" sx={{ backgroundColor: "white", color: "#ff3366", borderRadius: "20px" }}>
+             <Button variant="contained" sx={{ backgroundColor: "pink", color: "blue", borderRadius: "20px" }}>
            
              <Link  to="/signup"> Join Now</Link>
              </Button>
@@ -55,7 +55,7 @@ import {Link} from 'react-router-dom';
            <Button color="inherit">Testimonials</Button>
            <Button color="inherit">FAQ</Button>
            <Button color="inherit"><Link  to="/login">Sign In</Link></Button>
-           <Button variant="contained" sx={{ backgroundColor: "white", color: "#ff3366", borderRadius: "20px" }}>
+           <Button variant="contained" sx={{ backgroundColor: "pink", color: "blue", borderRadius: "20px" }}>
             
              <Link  to="/signup"> Join Now</Link>
            </Button>

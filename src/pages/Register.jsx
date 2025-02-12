@@ -29,7 +29,7 @@ const Register = () => {
   return (
    <div  style={{width: "100vw", margin:"auto", background:"#f7f7f7"}}>
     <Navigation />
-     <Container maxWidth="xs" style={{ marginTop: "50px", textAlign: "center" }}>
+     <Container maxWidth="xs" style={{ paddingTop: "140px", textAlign: "center" }}>
      <Box 
         sx={{ 
           boxShadow:10, 
@@ -38,7 +38,7 @@ const Register = () => {
           bgcolor: "white" 
         }}
       >
-      <Typography variant="h4" gutterBottom>Signup</Typography>
+      <Typography variant="h5" gutterBottom style ={{marginBottom:"20px"}}>Welcome to Harmony</Typography>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
         <TextField label="Full Name" name="name" variant="outlined" fullWidth onChange={handleChange} required />
         <TextField label="Email" name="email" type="email" variant="outlined" fullWidth onChange={handleChange} required />
