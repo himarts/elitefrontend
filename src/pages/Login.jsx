@@ -13,7 +13,7 @@ const Login = () => {
   };
 
   return (
-    <div style={{width:"100vw", margin:"auto", background:"#f7f7f7"}}>
+    <div style={{width:"100%", margin:"auto", background:"#f7f7f7", paddingTop:"80px"}}>
         <Navigation />
     <Container maxWidth="xs" style={{ paddingTop: "80px", textAlign: "center" }}>
       <Box 

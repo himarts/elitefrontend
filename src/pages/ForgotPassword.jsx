@@ -17,9 +17,9 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div style={{width:"100vw", height:"100vh", margin:"auto", background:"#f7f7f7"}}>
+    <div style={{width:"100%", height:"100vh", margin:"auto", background:"#f7f7f7"}}>
         <Navigation />
-    <Container maxWidth="sm" style={{ marginTop: "150px", textAlign: "center" }}>
+    <Container maxWidth="sm" style={{ paddingTop: "150px", textAlign: "center" }}>
         <Box
         
         sx={{ 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia, TextField, IconButton, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { FaHeart, FaUserCheck, FaVideo, FaComments, FaShieldAlt, FaMobileAlt, FaUsers, FaQuestionCircle, FaBars } from "react-icons/fa";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {Link} from 'react-router-dom';
 import Navigation from "../components/Nav.jsx";
 import Footer from "../components/Footer.jsx";
 
@@ -19,18 +20,18 @@ function Home() {
 
 return (
   <>
-   <div style={{  minHeight: "100%", background: "#f7f7f7", color: "#333", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",    width: "100vw", margin:"auto" }}>
+   <div style={{  minHeight: "100%", background: "#f7f7f7", color: "#333", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",    width: "100%", margin:"auto" }}>
 <Navigation />
       <Container style={{ marginTop: "120px" }}>
         <Typography variant="h2" style={{ fontWeight: "bold", fontSize: "3rem" }}>Find Your Perfect Match</Typography>
-        <Typography variant="h5" style={{ marginBottom: "20px", fontSize: "1.5rem" }}>Join the best dating community with verified profiles and AI matchmaking.</Typography>
+        <Typography variant="h6" style={{ marginBottom: "20px", fontSize: "1.5rem" }}>Join the best dating community with verified profiles and AI matchmaking.</Typography>
         <TextField
           variant="outlined"
           placeholder="Enter your name"
           style={{ backgroundColor: "white", borderRadius: "5px", marginBottom: "10px", width: "300px" }}
         />
         <br />
-        <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", padding: "10px 30px", fontSize: "20px", borderRadius: "20px" }}>Join Now</Button>
+        <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", padding: "10px 30px", fontSize: "20px", borderRadius: "20px" }}>  <Link  to="/signup"> Join Now</Link></Button>
       </Container>
 
       <Container style={{ marginTop: "40px" }}>

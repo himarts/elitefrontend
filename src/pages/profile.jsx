@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { AppBar, Toolbar, Container, Card, CardContent,TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText } from "@mui/material";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaBell, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaSignOutAlt } from "react-icons/fa";
+import { AppBar, Toolbar, Container, Card, CardContent, Dialog, DialogTitle, DialogContent,TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText } from "@mui/material";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaBell, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaSignOutAlt, FaComment, FaFlag  } from "react-icons/fa";
+import ChatWindow from "../components/chat";
+
 
 const friends = [
   { name: "Alice Smith", online: true },
@@ -10,24 +12,29 @@ const friends = [
 ];
 
 const onlineUsers = [
-  {id: 1, name: "Emily Clark", image: "https://randomuser.me/api/portraits/women/2.jpg", age: 28, location: "Los Angeles" },
-  {id: 2, name: "Michael Scott", image: "https://randomuser.me/api/portraits/men/3.jpg", age: 35, location: "Scranton" },
-  {id: 3, name: "Sarah Wilson", image: "https://randomuser.me/api/portraits/women/4.jpg", age: 30, location: "New York" },
-  {id: 4, name: "David Lee", image: "https://randomuser.me/api/portraits/men/5.jpg", age: 32, location: "Chicago" },
-  {id: 5, name: "Olivia Martinez", image: "https://randomuser.me/api/portraits/women/6.jpg", age: 26, location: "Miami" },
-  {id: 6, name: "James Anderson", image: "https://randomuser.me/api/portraits/men/7.jpg", age: 29, location: "Seattle" },
-  { id: 7,name: "Sophia Roberts", image: "https://randomuser.me/api/portraits/women/8.jpg", age: 31, location: "Boston" }
+  {id: 1, name: "Emily Clark",lastSeen: "4 hours ago", image: "https://randomuser.me/api/portraits/women/2.jpg", age: 28, location: "Los Angeles" },
+  {id: 2, name: "Michael Scott",lastSeen: "2 hours ago", image: "https://randomuser.me/api/portraits/men/3.jpg", age: 35, location: "Scranton" },
+  {id: 3, name: "Sarah Wilson",lastSeen: "5 hours ago", image: "https://randomuser.me/api/portraits/women/4.jpg", age: 30, location: "New York" },
+  {id: 4, name: "David Lee", lastSeen: "2 min ago",image: "https://randomuser.me/api/portraits/men/5.jpg", age: 32, location: "Chicago" },
+  {id: 5, name: "Olivia Martinez",lastSeen: "2 hours ago", image: "https://randomuser.me/api/portraits/women/6.jpg", age: 26, location: "Miami" },
+  {id: 6, name: "James Anderson", lastSeen: "1 hour ago",image: "https://randomuser.me/api/portraits/men/7.jpg", age: 29, location: "Seattle" },
+  { id: 7,name: "Sophia Roberts",lastSeen: "2 hours ago", image: "https://randomuser.me/api/portraits/women/8.jpg", age: 31, location: "Boston" }
 ];
 
 function UserProfile() {
 
     const [likedUsers, setLikedUsers] = useState({});
     const [dislikedUsers, setDislikedUsers] = useState({});
-
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [openChat, setOpenChat] = useState(false);
+    const [messages, setMessages] = useState({});
+  
 
     const handleUserClick = (user) => {
-      alert(`Viewing profile of ${user.name}`);
-    };
+        setSelectedUser(user);
+        setOpenModal(true);
+      };
 
   
     const handleLikes = (event, user) => {
@@ -54,12 +61,25 @@ function UserProfile() {
         }));
       };
       
+      const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedUser(null);
+      };
+
+      const handleOpenChat = () => {
+        setOpenModal(false);
+        setOpenChat(true);
+      };
+    
+      const handleCloseChat = () => {
+        setOpenChat(false);
+      };
   
     return (
-      <div style={{ width: "100vw" }}>
-        <AppBar position="static" style={{ backgroundColor: "#ff3366" }}>
+      <div style={{ width: "100%" }}>
+        <AppBar position="static" style={{ backgroundColor: "#ff3366", width:"100%"}}>
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6" style={{ fontWeight: "bold" }}>Dating App</Typography>
+            <Typography variant="h6" style={{ fontWeight: "bold" }}>EliteHarmony</Typography>
             <TextField variant="outlined" placeholder="Search..." size="small" style={{ backgroundColor: "white", borderRadius: "5px" }} />
             <div>
               <IconButton color="inherit">
@@ -158,6 +178,35 @@ function UserProfile() {
               </Grid>
             </Grid>
           </Card>
+
+            {/* User Profile Modal */}
+      <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
+        {selectedUser && (
+          <>
+            <DialogTitle style={{ textAlign: "center", fontWeight: "bold" }}>User Profile</DialogTitle>
+            <DialogContent style={{ textAlign: "center" }}>
+              <Avatar src={selectedUser.image} style={{ margin: "auto", width: "120px", height: "120px" }} />
+              <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "10px" }}>{selectedUser.name}, {selectedUser.age}</Typography>
+              <Typography variant="body2" style={{ color: "gray" }}>{selectedUser.location}</Typography>
+              <Typography variant="body2" style={{ color: selectedUser.lastSeen === "Online now" ? "green" : "gray" }}>Last seen: {selectedUser.lastSeen}</Typography>
+              <Divider style={{ margin: "15px 0" }} />
+              <Button variant="contained" style={{ backgroundColor: "#4caf50", color: "white", margin: "10px" }} startIcon={<FaComment />} onClick={handleOpenChat}>
+                Chat
+              </Button>
+              <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", margin: "10px" }} startIcon={<FaFlag />}>
+                Report
+              </Button>
+              <Divider style={{ margin: "15px 0" }} />
+              <Button onClick={handleCloseModal} color="secondary">Close</Button>
+            </DialogContent>
+          </>
+        )}
+      </Dialog>
+
+
+      {openChat && selectedUser && (
+        <ChatWindow user={selectedUser} onClose={handleCloseChat} messages={messages} setMessages={setMessages} />
+      )}
         </Container>
       </div>
     );
