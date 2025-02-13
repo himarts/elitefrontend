@@ -6,7 +6,6 @@ import Footer from "../components/Footer.jsx";
 
 
 
-
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 

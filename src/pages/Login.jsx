@@ -1,15 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, TextField, Button, Typography, Box, FormControlLabel, Checkbox } from "@mui/material";
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import Navigation from "../components/Nav.jsx";
+import { useNavigate } from "react-router-dom";
+import {loginUser} from '../features/authSlice.js';
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const { loading, error } = useSelector((state) => state?.auth);
+  let token = localStorage.getItem("token");
 
-  const handleLogin = (e) => {
+  useEffect(() => {
+    if (token) {
+      navigate("/profile", { replace: true });
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = () => {
+      navigate("/profile", { replace: true });
+    };
+  }, [navigate]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+    dispatch(loginUser({ email, password }))
+      .unwrap()
+      .then(() => {
+        toast.success("Login successful!");
+        navigate("/profile", { replace: true });
+      })
+      .catch((err) => toast.error(err || "Login failed"));
   };
 
   return (
@@ -25,7 +52,7 @@ const Login = () => {
         }}
       >
         <Typography variant="h5" gutterBottom>Login</Typography>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <TextField
             label="Email"
             type="email"
@@ -55,8 +82,9 @@ const Login = () => {
             variant="contained"
             fullWidth
             sx={{ mt: 2, bgcolor: "#ff3366", color: "white", "&:hover": { bgcolor: "#e60050" } }}
+            disabled={loading}
           >
-            Sign In
+          {loading ? "Logging in..." : "Login"}
           </Button>
           <Typography variant="body2" sx={{ mt: 2 }}>
             <Link to="/forgot-password" style={{ color: "#ff3366", textDecoration: "none" }}>Forgot Password?</Link>

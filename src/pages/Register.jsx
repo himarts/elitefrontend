@@ -1,29 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, TextField, Button, Typography,Box } from "@mui/material";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Navigation from "../components/Nav";
 import  {Link} from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import { registerUser } from "../features/authSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState("");
+  const dispatch = useDispatch();
+  const { error, loading, user } = useSelector(state => state?.auth);
+  const navigate = useNavigate()
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
-
   const handlePhoneChange = (value) => {
     setFormData({ ...formData, phone: value });
   };
 
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error?.error);
+    }
+  }, [error]); // Runs whenever `error` changes
+
+  useEffect(() => {
+    if (user) {
+      toast.success("Registration successful!");
+      navigate("/verification-process")
+    }
+  }, [user]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Signup Data:", formData);
+   dispatch(registerUser(formData));
+
+
   };
 
   return (
@@ -52,8 +68,8 @@ const Register = () => {
         
         <TextField label="Password" name="password" type="password" variant="outlined" fullWidth onChange={handleChange} required />
         
-        <Button type="submit" variant="contained" color="primary" fullWidth style={{ backgroundColor: "#ff3366" }}>
-          Sign Up
+        <Button type="submit"  disabled={loading}variant="contained" color="primary" fullWidth style={{ backgroundColor: "#ff3366" }}>
+        {loading ? "Registering..." : "Register"}
         </Button>
       </form>
             {/* Link to Login Page */}

@@ -2,7 +2,9 @@ import { useState } from "react";
 import { AppBar, Toolbar, Container, Card, CardContent, Dialog, DialogTitle, DialogContent,TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaBell, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaSignOutAlt, FaComment, FaFlag  } from "react-icons/fa";
 import ChatWindow from "../components/chat";
-
+import { useDispatch } from "react-redux";
+ import { logout } from "../features/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const friends = [
   { name: "Alice Smith", online: true },
@@ -29,7 +31,15 @@ function UserProfile() {
     const [openModal, setOpenModal] = useState(false);
     const [openChat, setOpenChat] = useState(false);
     const [messages, setMessages] = useState({});
-  
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+      dispatch(logout())
+      navigate("/login", { replace: true }); // Redirect to login
+
+    };
 
     const handleUserClick = (user) => {
         setSelectedUser(user);
@@ -97,7 +107,7 @@ function UserProfile() {
                   <FaBell size={20} />
                 </Badge>
               </IconButton>
-              <Button variant="contained" style={{ backgroundColor: "#fff", color: "#ff3366", marginLeft: "10px" }} startIcon={<FaSignOutAlt />}>
+              <Button variant="contained" style={{ backgroundColor: "#fff", color: "#ff3366", marginLeft: "10px" }} startIcon={<FaSignOutAlt />} onClick={handleLogout}>
                 Logout
               </Button>
             </div>
