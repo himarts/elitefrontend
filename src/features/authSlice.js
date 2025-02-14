@@ -8,7 +8,6 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await axios.post("http://localhost:9000/api/auth/register", userData);
       localStorage.setItem("token", response.data.token);
-      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

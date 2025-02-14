@@ -1,19 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, TextField, Button, Typography , Box} from "@mui/material";
 import { Link } from "react-router-dom";
 import Navigation from "../components/Nav.jsx";
-import Footer from "../components/Footer.jsx";
-
+import {forgotPassword} from '../features/resetSlice.js';
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector} from "react-redux";
 
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Password reset link sent to:", email);
-    alert("If this email is registered, a password reset link has been sent.");
+  const [email, setEmail] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { loading, error,success } = useSelector((state) => state?.reset);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+   dispatch(forgotPassword(email));
+    if (forgotPassword.fulfilled.match(result)) {
+      toast.success("Reset code sent to your email");
+    } else {
+      toast.error(result.payload || "Error sending reset code");
+    }
   };
+
+   useEffect(() => {
+      if (error) toast.error(error);
+      if (success) {
+        toast.success("Verification successful! Redirecting to password reset page");
+        setTimeout(() => {
+          navigate("/verify-reset-otp"); // Redirect to login page after success
+        }, 2000);
+      }
+    }, [error, success, navigate]);
 
   return (
     <div style={{width:"100%", height:"100vh", margin:"auto", background:"#f7f7f7"}}>

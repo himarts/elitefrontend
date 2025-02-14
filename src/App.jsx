@@ -12,7 +12,7 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import UserProfile from './pages/profile.jsx';
 import OtpVerification from './pages/Opt.jsx';
 import PrivateRoute from './components/privateRoute.jsx';
-
+import ResetPasswordOtp from './pages/resetPasswordOtp.jsx';
 function App() {
   return (
     <Router>
@@ -23,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/verification-process" element={<OtpVerification />} />
+          <Route path="/verify-reset-otp" element={<ResetPasswordOtp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 

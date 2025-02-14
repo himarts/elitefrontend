@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 const API_URL = "http://localhost:9000/api/auth";
 
@@ -9,12 +10,39 @@ export const forgotPassword = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/forgot-password`, { email });
+      localStorage.setItem("token", response.data.token);
+
+      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to send reset code");
     }
   }
 );
+
+export const verifyResetPassword = createAsyncThunk(
+  "/auth/verify-Otp",
+  async (verificationCode, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token"); // Get token from storage
+      if (!token) {
+        console.error("No token found in localStorage");
+        return rejectWithValue("No token found");
+      }
+
+      // Store the response
+      const response = await axios.post(
+        "http://localhost:9000/api/auth/verify-reset-password",
+        { verificationCode },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data; // Return the data correctly
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "OTP verification failed");
+    }
+  }
+);
+
 
 // Verify Reset Code
 export const verifyResetCode = createAsyncThunk(
@@ -29,18 +57,30 @@ export const verifyResetCode = createAsyncThunk(
   }
 );
 
-// Reset Password
-export const resetPassword = createAsyncThunk(
+
+export const resetPasswordd = createAsyncThunk(
   "auth/resetPassword",
-  async ({ email, newPassword }, { rejectWithValue }) => {
+  async ({ newPassword, token }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/reset-password`, { email, newPassword });
+      if (!token) {
+        throw new Error("Reset token is required");
+      }
+
+      console.log("Reset Password Request:", { newPassword });
+
+      const response = await axios.post(`${API_URL}/reset-password`, {
+        token, // Send the reset token
+        newPassword, // Send the new password
+      });
+
+      console.log("Reset Password Response:", response);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to reset password");
+      return rejectWithValue(error.response?.data?.error || "Failed to reset password");
     }
   }
 );
+
 
 const resetSlice = createSlice({
   name: "reset",
@@ -76,15 +116,15 @@ const resetSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(resetPassword.pending, (state) => {
+      .addCase(resetPasswordd.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(resetPassword.fulfilled, (state) => {
+      .addCase(resetPasswordd.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
       })
-      .addCase(resetPassword.rejected, (state, action) => {
+      .addCase(resetPasswordd.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

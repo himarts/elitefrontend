@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, TextField, Button, Typography , Box} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Nav.jsx";
-import Footer from "../components/Footer.jsx";
+import { resetPasswordd } from "../features/resetSlice.js";
+import { logout } from "../features/authSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 
 
@@ -10,19 +13,40 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, success } = useSelector((state) => state?.reset);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+const handleSubmit = (event) => {
+  event.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+  if (password !== confirmPassword) {
+    toast.error("Passwords do not match!");
+    return;
+  }
 
-    console.log("New password set:", password);
-    alert("Your password has been reset successfully!");
-    navigate("/login");
-  };
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("token"); // Ensure you store it as "resetToken" when generating
+
+  if (!token) {
+    toast.error("Reset token is missing or expired!");
+    return;
+  }
+
+  dispatch(resetPasswordd({ newPassword: password, token })); // Pass as an object
+};
+
+   // Show success or error messages
+   useEffect(() => {
+      if (error) toast.error(error);
+      if (success===true) {
+        toast.success("Verification successful! Redirecting to login...");
+        dispatch(logout()); 
+        setTimeout(() => {
+          navigate("/login"); // Redirect to login page after success
+        }, 2000);
+      }
+    }, [error, success, navigate]);
+  
 
   return (
     <div style={{width:"100%", margin:"auto", background:"#f7f7f7"}}>
