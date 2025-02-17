@@ -13,6 +13,24 @@ import UserProfile from './pages/profile.jsx';
 import OtpVerification from './pages/Opt.jsx';
 import PrivateRoute from './components/privateRoute.jsx';
 import ResetPasswordOtp from './pages/resetPasswordOtp.jsx';
+import ProgressiveForm from './pages/ProfileProgress.jsx';
+import axios from 'axios';
+
+
+// const getLocation = async () => {
+//   try {
+//     const response = await axios.get("http://localhost:9000/api/get-location");
+//     // const data = await response.json();
+//     console.log("User Location:", response);
+//   } catch (error) {
+//     console.error("Error getting location:", error);
+//   }
+// };
+
+// // Call this function when the page loads
+// getLocation();
+
+
 function App() {
   return (
     <Router>
@@ -26,9 +44,11 @@ function App() {
           <Route path="/verify-reset-otp" element={<ResetPasswordOtp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/profile-progress" element={<ProgressiveForm />} />
 
           <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<UserProfile />} />
+
 
           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         </Route>
@@ -40,3 +60,4 @@ function App() {
 }
 
 export default App;
+              
