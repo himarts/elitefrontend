@@ -13,6 +13,28 @@ export const updateProfile = createAsyncThunk(
       }
     }
   );
+
+
+  export const getProfile = createAsyncThunk(
+    "profile/getProfile",
+    async (token, { rejectWithValue }) => {
+
+      try {
+
+        const token = localStorage.getItem("token")
+        const response = await axios.get(`http://localhost:9000/api/profile/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.log(error);
+        return rejectWithValue(error.response?.data || "Failed to fetch data");
+      }
+    }
+  );
+  
   
 // Async action to update profile
 
@@ -92,7 +114,18 @@ const profileSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      });
+      })
+      .addCase(getProfile.pending,(state, action) => {
+        state.status = "loading";
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.profile = action.payload;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
   },
 });
 

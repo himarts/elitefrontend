@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
  import { logout } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { checkProfileCompletion } from "../features/authSlice.js";
+import { updateProfile } from "../features/profileSlice";
+
+
 const friends = [
   { name: "Alice Smith", online: true },
   { name: "Bob Johnson", online: false },
@@ -31,9 +34,10 @@ function UserProfile() {
     const [openModal, setOpenModal] = useState(false);
     const [openChat, setOpenChat] = useState(false);
     const [messages, setMessages] = useState({});
+    
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
 //check profile complete
   const { isProfileComplete } = useSelector((state) => state.auth);
 
@@ -90,6 +94,8 @@ function UserProfile() {
       const handleCloseChat = () => {
         setOpenChat(false);
       };
+
+    
   
     return (
       <div style={{ width: "100%" }}>
@@ -120,11 +126,16 @@ function UserProfile() {
           </Toolbar>
         </AppBar>
         {!isProfileComplete && (
-        <div style={{ background: "yellow", padding: "10px", textAlign: "center",borderRadius:"0px 0px 10px 10px" }}>
-          Your profile is incomplete! Please complete your profile.
-          <button onClick={() => navigate("/profile-progress")}>Complete Now</button>
-        </div>
-      )}
+  <div style={{ background: "yellow", padding: "10px", textAlign: "center", borderRadius: "0px 0px 10px 10px" , opacity:"0.7"}}>
+    Your profile is incomplete! Please complete your profile.
+    <button 
+      onClick={() => navigate("/profile-progress")} 
+      style={{ color: "white", fontWeight: "bold" }}
+    >
+      Complete Now
+    </button>
+  </div>
+)}
   
         <Container style={{ display: "flex", justifyContent: "center", flexDirection: "column", width: "100vw", margin: "auto" }}>
           <Card style={{ textAlign: "center", padding: "20px", borderRadius: "15px", width: "90%", backgroundColor: "#f0f2f5", margin: "auto" }}>
