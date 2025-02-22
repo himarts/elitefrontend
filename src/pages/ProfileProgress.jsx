@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import {Box, Grid ,FormControlLabel, Checkbox, TextField, Button, Stepper, Step, StepLabel, MenuItem } from "@mui/material";import { FaUser, FaEnvelope, FaPhone, FaBirthdayCake, FaMapMarkerAlt } from "react-icons/fa";
 import { MdWork, MdFavorite } from "react-icons/md";
+import { useSelector, useDispatch } from "react-redux";
+
+
+
+
+import { updateProfile, setProfile } from "../features/profileSlice";
+
 
 const steps = ["Personal Information", "Matching Preferences", "Verification & Security", "Lifestyle & Interests", "Professional Details"];
 
@@ -23,8 +30,13 @@ const securityOptions = ["Two-Factor Authentication", "Security Questions", "Bac
 const fitnessLifestyle = ["Active", "Occasionally active", "Not active"];
 const workFlexibility = ["Frequent traveler", "Remote worker", "Fixed location"];
 const verificationMethods = ["ID Verification"];
+
+
 const ProgressiveForm = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const dispatch = useDispatch();
+  const { profile, status, error } = useSelector((state) => state.profile);
+
   const [formData, setFormData] = useState({
      name: "",
     username: "",
@@ -95,6 +107,12 @@ const ProgressiveForm = () => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const userId = "USER_ID_HERE";   
+    dispatch(updateProfile(profile));
+  };
 
   const renderStepContent = (step) => {
     switch (step) {

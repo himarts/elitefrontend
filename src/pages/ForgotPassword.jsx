@@ -64,9 +64,17 @@ const ForgotPassword = () => {
           onChange={(e) => setEmail(e.target.value)} 
         />
         
-        <Button type="submit" variant="contained" color="primary" fullWidth style={{ backgroundColor: "#ff3366" }}>
-          Send Reset Link
-        </Button>
+     
+<Button
+  type="submit"
+  variant="contained"
+  color="primary"
+  fullWidth
+  style={{ backgroundColor: "#ff3366" }}
+  disabled={loading} // Disable button when loading
+>
+  {loading ? "Sending..." : "Send Reset Link"}
+</Button>
       </form>
 
       {/* Link to Login Page */}

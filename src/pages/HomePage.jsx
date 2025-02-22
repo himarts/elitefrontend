@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia, TextField, IconButton, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { FaHeart, FaUserCheck, FaVideo, FaComments, FaShieldAlt, FaMobileAlt, FaUsers, FaQuestionCircle, FaBars } from "react-icons/fa";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -18,6 +17,7 @@ const users = [
 ];
 function Home() {
 
+
 return (
   <>
    <div style={{  minHeight: "100%", background: "#f7f7f7", color: "#333", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",    width: "100%", margin:"auto" }}>
@@ -32,6 +32,9 @@ return (
         />
         <br />
         <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", padding: "10px 30px", fontSize: "20px", borderRadius: "20px" }}>  <Link  to="/signup"> Join Now</Link></Button>
+      </Container>
+      <Container>
+   
       </Container>
 
       <Container style={{ marginTop: "40px" }}>

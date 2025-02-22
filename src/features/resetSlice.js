@@ -20,42 +20,58 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
-export const verifyResetPassword = createAsyncThunk(
-  "/auth/verify-Otp",
-  async (verificationCode, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem("token"); // Get token from storage
-      if (!token) {
-        console.error("No token found in localStorage");
-        return rejectWithValue("No token found");
-      }
+// export const verifyResetPassword = createAsyncThunk(
+//   "/auth/verify-Otp",
+//   async (verificationCode, { rejectWithValue }) => {
+//     try {
+//       const token = localStorage.getItem("token"); // Get token from storage
+//       if (!token) {
+//         console.error("No token found in localStorage");
+//         return rejectWithValue("No token found");
+//       }
 
-      // Store the response
-      const response = await axios.post(
-        "http://localhost:9000/api/auth/verify-reset-password",
-        { verificationCode },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data; // Return the data correctly
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "OTP verification failed");
-    }
-  }
-);
+//       // Store the response
+//       const response = await axios.post(
+//         "http://localhost:9000/api/auth/verify-reset-password",
+//         { verificationCode },
+//         { headers: { Authorization: `Bearer ${token}` } }
+//       );
+//       return response.data; // Return the data correctly
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || "OTP verification failed");
+//     }
+//   }
+// );
 
 
 // Verify Reset Code
-export const verifyResetCode = createAsyncThunk(
+
+
+export const verifyResetPasswordCode = createAsyncThunk(
   "auth/verifyResetCode",
-  async ({ email, resetCode }, { rejectWithValue }) => {
+  async ({ otpCode }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/verify-reset-code`, { email, resetCode });
+
+      console.log(otpCode)
+      // Get token from localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      // Send request to backend with token in headers
+      const response = await axios.post(
+        `${API_URL}/verify-reset-code`,
+        { verificationCode: otpCode, token }, // Backend extracts email from token
+);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Invalid reset code");
+      console.log(error)
+      return rejectWithValue(error.response?.data?.error || error.message || "Invalid reset code");
     }
   }
 );
+
 
 
 export const resetPasswordd = createAsyncThunk(
@@ -104,15 +120,15 @@ const resetSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(verifyResetCode.pending, (state) => {
+      .addCase(verifyResetPasswordCode.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(verifyResetCode.fulfilled, (state) => {
+      .addCase(verifyResetPasswordCode.fulfilled, (state) => {
         state.loading = false;
-        state.success = true;
+        state.success = "verified";
       })
-      .addCase(verifyResetCode.rejected, (state, action) => {
+      .addCase(verifyResetPasswordCode.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Navigation from "../components/Nav.jsx";
 import { useNavigate } from "react-router-dom";
 import {loginUser} from '../features/authSlice.js';
-
+import getUserIdFromToken from '../utils/decodeToken.js'
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +14,11 @@ const Login = () => {
   const dispatch = useDispatch()
   const { loading, error } = useSelector((state) => state?.auth);
   let token = localStorage.getItem("token");
-
+  const userId = getUserIdFromToken(); // Get userId from token
+  // if (!userId) {
+  //   console.error("User not authenticated");
+  //   return;
+  // }
   useEffect(() => {
     if (token) {
       navigate("/profile", { replace: true });
@@ -24,6 +28,7 @@ const Login = () => {
   useEffect(() => {
     window.history.pushState(null, null, window.location.href);
     window.onpopstate = () => {
+   
       navigate("/profile", { replace: true });
     };
   }, [navigate]);

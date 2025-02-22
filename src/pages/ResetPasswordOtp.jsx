@@ -5,10 +5,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../features/authSlice";
-import { verifyResetPassword } from "../features/resetSlice";
+import { verifyResetPasswordCode } from "../features/resetSlice";
+
 const ResetPasswordOtp = () => {
   const dispatch = useDispatch();
-  const { loading, error, success } = useSelector((state) => state.auth);
+  const { loading, error, success } = useSelector((state) => state.reset);
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [timer, setTimer] = useState(60);
@@ -52,7 +53,7 @@ const ResetPasswordOtp = () => {
     e.preventDefault();
     const otpCode = otp.join("");
     if (otpCode.length === 6) {
-      dispatch(verifyResetPassword(otpCode));
+      dispatch(verifyResetPasswordCode({ otpCode }));
     } else {
       toast.error("Enter all 6 digits");
     }
@@ -61,7 +62,7 @@ const ResetPasswordOtp = () => {
    // Show success or error messages
  useEffect(() => {
   if (error) toast.error(error);
-  if (success) {
+  if (success === "verified") {
     toast.success("Verification successful!");
     navigate('/reset-password')
     setTimeout(() => {

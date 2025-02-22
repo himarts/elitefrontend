@@ -25,7 +25,6 @@ export const resendOtp = createAsyncThunk("/auth/resend-Otp", async (_, { reject
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
-console.log(response)
     localStorage.setItem("token", response.data.token); // Store the new token
     return response.data.message;
   } catch (error) {
@@ -75,6 +74,26 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+
+export const checkProfileCompletion = createAsyncThunk(
+  "auth/checkProfileCompletion",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_URL}/profile-progress`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || "Error checking profile");
+    }
+  }
+);
+
+
+
+
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -82,7 +101,8 @@ const authSlice = createSlice({
     token: null,
     loading: false,
     error: null,
-    message:""
+    message:"",
+    isProfileComplete: false, // ✅
   },
   reducers: {
     logout: (state) => {
@@ -137,6 +157,12 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(checkProfileCompletion.fulfilled, (state, action) => {
+        state.isProfileComplete = action.payload.isProfileComplete;
+      })
+      .addCase(checkProfileCompletion.rejected, (state, action) => {
         state.error = action.payload;
       });
   },

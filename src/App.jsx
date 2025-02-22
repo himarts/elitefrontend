@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import styles
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import Home from './pages/HomePage.jsx';
 import Login from './pages/Login.jsx';
@@ -14,6 +16,7 @@ import OtpVerification from './pages/Opt.jsx';
 import PrivateRoute from './components/privateRoute.jsx';
 import ResetPasswordOtp from './pages/resetPasswordOtp.jsx';
 import ProgressiveForm from './pages/ProfileProgress.jsx';
+
 import axios from 'axios';
 
 
@@ -31,7 +34,12 @@ import axios from 'axios';
 // getLocation();
 
 
+
+
 function App() {
+
+
+
   return (
     <Router>
       <Container style={{ }}>

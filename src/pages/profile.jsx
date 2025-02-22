@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { AppBar, Toolbar, Container, Card, CardContent, Dialog, DialogTitle, DialogContent,TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaBell, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaSignOutAlt, FaComment, FaFlag  } from "react-icons/fa";
 import ChatWindow from "../components/chat";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
  import { logout } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
-
+import { checkProfileCompletion } from "../features/authSlice.js";
 const friends = [
   { name: "Alice Smith", online: true },
   { name: "Bob Johnson", online: false },
@@ -34,7 +34,13 @@ function UserProfile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+//check profile complete
+  const { isProfileComplete } = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    dispatch(checkProfileCompletion());
+  }, [dispatch]);
+  
     const handleLogout = () => {
       dispatch(logout())
       navigate("/login", { replace: true }); // Redirect to login
@@ -113,6 +119,12 @@ function UserProfile() {
             </div>
           </Toolbar>
         </AppBar>
+        {!isProfileComplete && (
+        <div style={{ background: "yellow", padding: "10px", textAlign: "center",borderRadius:"0px 0px 10px 10px" }}>
+          Your profile is incomplete! Please complete your profile.
+          <button onClick={() => navigate("/profile-progress")}>Complete Now</button>
+        </div>
+      )}
   
         <Container style={{ display: "flex", justifyContent: "center", flexDirection: "column", width: "100vw", margin: "auto" }}>
           <Card style={{ textAlign: "center", padding: "20px", borderRadius: "15px", width: "90%", backgroundColor: "#f0f2f5", margin: "auto" }}>
