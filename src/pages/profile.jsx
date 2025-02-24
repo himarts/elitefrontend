@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
  import { logout } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { checkProfileCompletion } from "../features/authSlice.js";
-import { updateProfile } from "../features/profileSlice";
-
+import {likeProfile, dislikeProfile} from '../features/LikesDisplikesSlice.js';
 
 const friends = [
   { name: "Alice Smith", online: true },
@@ -35,7 +34,7 @@ function UserProfile() {
     const [openChat, setOpenChat] = useState(false);
     const [messages, setMessages] = useState({});
     
-
+console.log(likedUsers, ">>>>>>>>>>>>")
     const dispatch = useDispatch();
     const navigate = useNavigate();
 //check profile complete
@@ -56,8 +55,8 @@ function UserProfile() {
         setOpenModal(true);
       };
 
-  
-    const handleLikes = (event, user) => {
+      const handleLikes = (event, user) => {
+        console.log(user)
         event.stopPropagation();
         setLikedUsers((prev) => ({
           ...prev,
@@ -67,8 +66,10 @@ function UserProfile() {
           ...prev,
           [user.id]: false, // Remove dislike if previously disliked
         }));
+        dispatch(likeProfile({ profileId: user.id }));
       };
-    
+
+      
       const handleDislikes = (event, user) => {
         event.stopPropagation();
         setDislikedUsers((prev) => ({
@@ -79,6 +80,7 @@ function UserProfile() {
           ...prev,
           [user.id]: false, // Remove like if previously liked
         }));
+        dispatch(dislikeProfile({ profileId: user.id }));
       };
       
       const handleCloseModal = () => {

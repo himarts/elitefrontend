@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from "react";
-import { Box, Grid, FormControlLabel, Checkbox, TextField, Button, Stepper, Step, StepLabel, MenuItem } from "@mui/material";
+import { Box, Grid, FormControlLabel, Checkbox, TextField, Button, Stepper, Step, StepLabel, MenuItem, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { updateProfile, getProfile } from "../features/profileSlice";
 // import jwtDecode from "jwt-decode";
@@ -28,10 +28,8 @@ const verificationMethods = ["ID Verification"];
 const ProgressiveForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state?.profile);
-  // const token  = localStorage.getItem("token");
-  // const decodedToken = jwtDecode(token);
-  // const userId = decodedToken.userId;
+  const { profile, status } = useSelector((state) => state?.profile);
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -93,21 +91,22 @@ const ProgressiveForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleCheckboxChange = (e, field) => {
-    const { value, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: checked ? [...prev[field], value] : prev[field].filter((item) => item !== value),
-    }));
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: checked }));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    // dispatch(updateProfile({ userId, profileData: formData }));
+    dispatch(updateProfile(formData));
   };
   useEffect(() => {
-    const token = localStorage.getItem("token");
+ 
     dispatch(getProfile());
   }, [dispatch]);
+
+  if(status === "loading") {
+    return <CircularProgress />
+  }
 
 
   const renderStepContent = (step) => {
@@ -118,8 +117,8 @@ const ProgressiveForm = () => {
             <TextField name="name" label="Name" value={formData.name || profile?.name} onChange={handleChange} fullWidth margin="normal"  disabled
             />
             <TextField name="username" label="Username" value={formData.username || profile?.username} onChange={handleChange} fullWidth margin="normal" />
-            <TextField name="email" label="Email" value={formData.email || profile?.email} onChange={handleChange} fullWidth margin="normal" />
-            <TextField name="phone" label="Phone" value={formData.phone || profile.phone} onChange={handleChange} fullWidth margin="normal" />
+            <TextField name="email" label="Email" value={formData.email || profile?.email} onChange={handleChange} fullWidth margin="normal" disabled/>
+            <TextField name="phone" label="Phone" value={formData.phone || profile.phone} onChange={handleChange} fullWidth margin="normal" disabled />
             <TextField name="gender" label="Gender" select value={formData.gender || profile?.gender} onChange={handleChange} fullWidth margin="normal">
               {["Male", "Female", "Non-binary", "Other"].map((option) => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
@@ -213,8 +212,8 @@ const ProgressiveForm = () => {
                 <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
             </TextField>
-            <TextField type="file" name="idFront" label="Upload Front of ID" onChange={handleChange} fullWidth margin="normal" />
-            <TextField type="file" name="idBack" label="Upload Back of ID" onChange={handleChange} fullWidth margin="normal" />
+            <input type="file" name="idFront" label="Upload Front of ID" onChange={handleChange} fullWidth margin="normal" />
+            <input type="file" name="idBack" label="Upload Back of ID" onChange={handleChange} fullWidth margin="normal" />
             <TextField name="securityOption" label="Security Option" select value={formData.securityOption} onChange={handleChange} fullWidth margin="normal">
               {securityOptions.map((option) => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
@@ -341,7 +340,7 @@ const ProgressiveForm = () => {
       <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between" }}>
         <Button disabled={activeStep === 0} onClick={handleBack}>Back</Button>
         {activeStep === steps.length - 1 ? (
-          <Button variant="contained" color="primary" type="submit">Submit</Button>
+          <Button variant="contained" color="primary" type="submit" >Submit</Button>
         ) : (
           <Button variant="contained" color="primary" onClick={handleNext}>Next</Button>
         )}

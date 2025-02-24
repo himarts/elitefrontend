@@ -3,16 +3,24 @@ import axios from "axios";
 
 
 export const updateProfile = createAsyncThunk(
-    "profile/updateProfile",
-    async ({ userId, profileData }, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(`http://localhost:9000/api/profile/update/${userId}`, profileData); // Pass userId in the URL
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(error.response?.data || "Failed to update profile");
-      }
+  "profile/updateProfile",
+  async ({ userId, profileData }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.put(`http://localhost:9000/api/profile/update`, profileData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response?.data || "Failed to update profile");
     }
-  );
+  }
+);
 
 
   export const getProfile = createAsyncThunk(
