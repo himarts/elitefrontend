@@ -3,12 +3,40 @@ import axios from "axios";
 
 export const likeProfile = createAsyncThunk(
   "likesDislikes/likeProfile",
-  async ({  profileId }, { rejectWithValue }) => {
+  async ({ profileId }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      
+console.log(profileId)
       const response = await axios.post(
-        `http://localhost:9000/api/profile/liked/${profileId}`,
+        `http://localhost:9000/api/profiles/likes/${profileId}`,
+        {}, // No request body needed
+        {
+          headers: {
+            "Content-Type": "application/json", // ✅ Fix: Ensure JSON headers
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.error("Error in likeProfile:", error);
+      return rejectWithValue(error.response?.data || "Failed to like profile");
+    }
+  }
+);
+
+
+
+export const dislikeProfile = createAsyncThunk(
+  "likesDislikes/dislikeProfile",
+  async ({ userId, profileId }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:9000/api/profiles/disliked/${ profileId }`,
+       {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -18,31 +46,63 @@ export const likeProfile = createAsyncThunk(
       console.log(response)
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to like profile");
+      return rejectWithValue(error.response?.data || "Failed to dislike profile");
     }
   }
 );
 
-export const dislikeProfile = createAsyncThunk(
-  "likesDislikes/dislikeProfile",
-  async ({ userId, profileId }, { rejectWithValue }) => {
+
+// get all liked users
+
+export const getLikedUsers = createAsyncThunk(
+  "likesDislikes/getLikedUsers",async (userId, { rejectWithValue }) => {
+try {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    `http://localhost:9000/api/profiles/liked`,
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log(response)
+  return response.data;
+} catch (error) {
+  console.log(error)
+  return rejectWithValue(error.response?.data || "Failed to fetch liked users");
+  
+}
+  }
+);
+
+export const getDislikedUsers = createAsyncThunk(
+  "likesDislikes/getDislikedUsers" ,async (userId, {rejectWithValue}) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:9000/api/profile/disliked/${ profileId }`,
-       
+      const response = await axios.get(
+        `http://localhost:9000/api/profiles/disliked`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log(response)
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to dislike profile");
+      console.log(error)
+      return rejectWithValue(error.response?.data || "failed to fetched disliked users");
     }
   }
-);
+)
+
+
+
+
+
+
 
 const likesDislikesSlice = createSlice({
   name: "likesDislikes",
@@ -51,6 +111,8 @@ const likesDislikesSlice = createSlice({
     dislikes: [],
     status: "idle", // idle | loading | succeeded | failed
     error: null,
+    allLikedUsers:[],
+    allDislikedUsers:[],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -74,6 +136,28 @@ const likesDislikesSlice = createSlice({
         state.dislikes.push(action.payload);
       })
       .addCase(dislikeProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getLikedUsers.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getLikedUsers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.allLikedUsers.push(action.payload);
+      })
+      .addCase(getLikedUsers.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getDislikedUsers.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getDislikedUsers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.allDislikedUsers.push(action.payload);
+      })
+      .addCase(getDislikedUsers.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

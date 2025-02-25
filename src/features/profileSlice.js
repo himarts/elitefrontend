@@ -1,50 +1,61 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
 export const updateProfile = createAsyncThunk(
   "profile/updateProfile",
   async ({ userId, profileData }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.put(`http://localhost:9000/api/profile/update`, profileData, {
+      const response = await axios.put(`http://localhost:9000/api/profile/update/${userId}`, profileData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
       return response.data;
     } catch (error) {
-      console.log(error);
       return rejectWithValue(error.response?.data || "Failed to update profile");
     }
   }
 );
 
-
-  export const getProfile = createAsyncThunk(
-    "profile/getProfile",
-    async (token, { rejectWithValue }) => {
-
-      try {
-
-        const token = localStorage.getItem("token")
-        const response = await axios.get(`http://localhost:9000/api/profile/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.log(error);
-        return rejectWithValue(error.response?.data || "Failed to fetch data");
-      }
+export const getProfile = createAsyncThunk(
+  "profile/getProfile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:9000/api/profile/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch data");
     }
-  );
-  
-  
-// Async action to update profile
+  }
+);
+
+
+
+export const getOnlineUsers = createAsyncThunk(
+  "profile/getOnlineUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:9000/api/profile/online-users", {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Include token
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch online users");
+    }
+  }
+);
 
 
 const profileSlice = createSlice({
@@ -102,6 +113,7 @@ const profileSlice = createSlice({
       petOwnership: "",
       petType: "",
     },
+    onlineUsers: [],
     status: "idle", // idle | loading | succeeded | failed
     error: null,
   },
@@ -123,7 +135,7 @@ const profileSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(getProfile.pending,(state, action) => {
+      .addCase(getProfile.pending, (state) => {
         state.status = "loading";
       })
       .addCase(getProfile.fulfilled, (state, action) => {
@@ -134,6 +146,17 @@ const profileSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(getOnlineUsers.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getOnlineUsers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.onlineUsers = action.payload;
+      })
+      .addCase(getOnlineUsers.rejected, (state, action) => {
+        state.status = "failed>>>>";
+        state.error = action.payload;
+      });
   },
 });
 
