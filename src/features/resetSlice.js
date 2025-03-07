@@ -12,7 +12,6 @@ export const forgotPassword = createAsyncThunk(
       const response = await axios.post(`${API_URL}/forgot-password`, { email });
       localStorage.setItem("token", response.data.token);
 
-      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to send reset code");
@@ -52,7 +51,6 @@ export const verifyResetPasswordCode = createAsyncThunk(
   async ({ otpCode }, { rejectWithValue }) => {
     try {
 
-      console.log(otpCode)
       // Get token from localStorage
       const token = localStorage.getItem("token");
       if (!token) {
@@ -66,7 +64,6 @@ export const verifyResetPasswordCode = createAsyncThunk(
 );
       return response.data;
     } catch (error) {
-      console.log(error)
       return rejectWithValue(error.response?.data?.error || error.message || "Invalid reset code");
     }
   }
@@ -82,14 +79,12 @@ export const resetPasswordd = createAsyncThunk(
         throw new Error("Reset token is required");
       }
 
-      console.log("Reset Password Request:", { newPassword });
 
       const response = await axios.post(`${API_URL}/reset-password`, {
         token, // Send the reset token
         newPassword, // Send the new password
       });
 
-      console.log("Reset Password Response:", response);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to reset password");

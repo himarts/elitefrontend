@@ -28,7 +28,6 @@ export const resendOtp = createAsyncThunk("/auth/resend-Otp", async (_, { reject
     localStorage.setItem("token", response.data.token); // Store the new token
     return response.data.message;
   } catch (error) {
-    console.log(error)
     return rejectWithValue(error.response?.data?.message || "Failed to resend OTP");
   }
 });
@@ -55,7 +54,6 @@ export const verifyOtp = createAsyncThunk(
 
       return response.data; // Return the data correctly
     } catch (error) {
-      console.log(error);
       return rejectWithValue(error.response?.data?.message || "OTP verification failed");
     }
   }
@@ -67,7 +65,6 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post("http://localhost:9000/api/auth/login", credentials);
       localStorage.setItem("token", response.data.token); // Store token
-      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");

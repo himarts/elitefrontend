@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
-import { Container, Card, CardContent, TextField, CardMedia, Typography, Button, Grid, Divider, Badge, Avatar, IconButton, List, ListItem, ListItemText, Snackbar } from "@mui/material";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaHeart, FaGlobe, FaCamera, FaComments, FaUsers, FaCircle, FaThumbsUp, FaThumbsDown, FaComment, FaFlag } from "react-icons/fa";
+import { Container, Card, Divider, Grid, List, ListItem, ListItemText, Snackbar, Typography, IconButton, Avatar } from "@mui/material";
+import { FaCircle, FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import ChatWindow from "../components/chat";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { checkProfileCompletion } from "../features/authSlice.js";
 import { likeProfile, dislikeProfile, getDislikedUsers, getLikedUsers } from '../features/LikesDisplikesSlice.js';
-import { getOnlineUsers } from "../features/profileSlice.js";
+import { getOnlineUsers, getProfile, getFriends } from "../features/profileSlice.js";
 import axios from "axios";
-import UserProfileModal from "../components/modal.jsx";
+import UserProfileModal from "../components/UserProfileModal";
 import Header from "../components/Header";
-
-const friends = [
-  { name: "Alice Smith", online: true },
-  { name: "Bob Johnson", online: false },
-  { name: "Charlie Brown", online: true },
-  { name: "Diana Miller", online: false }
-];
+import socket from "../utils/socket";
+import UserPhotoAndInfo from "../components/UserPhotoAndInfo";
 
 function UserProfile() {
   const [likedUsers, setLikedUsers] = useState({});
@@ -27,14 +22,13 @@ function UserProfile() {
   const [openChat, setOpenChat] = useState(false);
   const [messages, setMessages] = useState({});
   const [notification, setNotification] = useState({ open: false, message: "" });
-  const [notificationCount, setNotificationCount] = useState(2); // Example notification count
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isProfileComplete } = useSelector((state) => state?.auth);
-  const { onlineUsers } = useSelector((state) => state?.profile);
+  const { isProfileComplete, user } = useSelector((state) => state?.auth);
+  const { onlineUsers, profile, friends } = useSelector((state) => state?.profile);
   const { allLikedUsers, allDislikedUsers } = useSelector((state) => state?.likesDislikes);
-
   useEffect(() => {
     dispatch(checkProfileCompletion());
   }, [dispatch]);
@@ -43,6 +37,8 @@ function UserProfile() {
     dispatch(getOnlineUsers());
     dispatch(getLikedUsers());
     dispatch(getDislikedUsers());
+    dispatch(getProfile());
+    dispatch(getFriends());
   }, [dispatch]);
 
   useEffect(() => {
@@ -60,6 +56,17 @@ function UserProfile() {
     }, {});
     setDislikedUsers(dislikedUsersMap);
   }, [allDislikedUsers]);
+
+  useEffect(() => {
+    socket.on("notification", (data) => {
+      setNotificationCount((prevCount) => prevCount + 1);
+      setNotification({ open: true, message: data.message });
+    });
+
+    return () => {
+      socket.off("notification");
+    };
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -110,7 +117,10 @@ function UserProfile() {
       );
 
       if (response.data.success) {
-        setNotification({ open: true, message: "User has been notified of your like!" });
+        socket.emit("sendNotification", {
+          receiverId: likedId,
+          message: "Someone liked your profile!",
+        });
       }
     } catch (error) {
       console.error("Error sending like notification:", error);
@@ -156,7 +166,10 @@ function UserProfile() {
       );
 
       if (response.data.success) {
-        setNotification({ open: true, message: "User has been notified of your dislike!" });
+        socket.emit("sendNotification", {
+          receiverId: dislikedId,
+          message: "Someone disliked your profile!",
+        });
       }
     } catch (error) {
       console.error("Error sending dislike notification:", error);
@@ -181,6 +194,16 @@ function UserProfile() {
     setNotification({ open: false, message: "" });
   };
 
+  const handleUpdateProfilePicture = (newProfilePicture) => {
+    setUpdatedProfile((prevProfile) => ({
+      ...prevProfile,
+      profilePicture: newProfilePicture,
+    }));
+  };
+
+  // Filter out the logged-in user from the list of online users
+  const filteredOnlineUsers = onlineUsers.filter((onlineUser) => onlineUser._id !== user?._id);
+
   return (
     <div style={{ width: "100%" }}>
       <Header handleLogout={handleLogout} notificationCount={notificationCount} />
@@ -198,39 +221,13 @@ function UserProfile() {
 
       <Container style={{ display: "flex", justifyContent: "center", flexDirection: "column", width: "100vw", margin: "auto" }}>
         <Card style={{ textAlign: "center", padding: "20px", borderRadius: "15px", width: "90%", backgroundColor: "#f0f2f5", margin: "auto" }}>
-          <Grid container spacing={2} alignItems="center" justifyContent="space-between">
-            <Grid item xs={12} md={4}>
-              <CardMedia
-                component="img"
-                height="250"
-                image="https://randomuser.me/api/portraits/men/1.jpg"
-                alt="User Profile"
-                style={{ borderRadius: "15px", width: "100%", maxWidth: "250px" }}
-              />
-              <Button variant="contained" component="label" style={{ marginTop: "10px", backgroundColor: "#ff3366", color: "white" }} startIcon={<FaCamera />}>
-                Change Photo
-                <input type="file" hidden />
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Typography variant="h3" style={{ fontWeight: "bold" }}>John Doe</Typography>
-              <Typography variant="body1"><FaEnvelope style={{ marginRight: "10px" }} /> johndoe@example.com</Typography>
-              <Typography variant="body1"><FaPhone style={{ marginRight: "10px" }} /> +1 234 567 890</Typography>
-              <Typography variant="body1"><FaMapMarkerAlt style={{ marginRight: "10px" }} /> New York, USA</Typography>
-              <Typography variant="body1"><FaGlobe style={{ marginRight: "10px" }} /> Looking for: Serious Relationship</Typography>
-              <Typography variant="body1"><FaHeart style={{ marginRight: "10px" }} /> Interests: Hiking, Traveling, Music</Typography>
-              <Button variant="contained" style={{ backgroundColor: "#ff3366", color: "white", marginTop: "15px" }} startIcon={<FaEdit />}>
-                Edit Profile
-              </Button>
-            </Grid>
-          </Grid>
-
+          <UserPhotoAndInfo profile={profile} />
           <Divider style={{ margin: "20px 0" }} />
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <Typography variant="h5" style={{ marginBottom: "10px", fontWeight: "bold" }}>Friends</Typography>
               <List>
-                {friends.map((friend, index) => (
+                {Array.isArray(friends) && friends?.map((friend, index) => (
                   <ListItem key={index}>
                     <FaCircle style={{ color: friend.online ? "green" : "gray", marginRight: "10px" }} />
                     <ListItemText primary={friend.name} onClick={() => handleUserClick(friend)} style={{ cursor: "pointer" }} />
@@ -242,10 +239,10 @@ function UserProfile() {
             <Grid item xs={12} md={8}>
               <Typography variant="h5" style={{ marginBottom: "10px", fontWeight: "bold" }}>Online Users</Typography>
               <Grid container spacing={2}>
-                {onlineUsers.map((user, index) => (
+                {filteredOnlineUsers.map((user, index) => (
                   <Grid item key={index} xs={6} sm={4} md={3}>
                     <Card style={{ padding: "10px", textAlign: "center", cursor: "pointer" }} onClick={() => handleUserClick(user)}>
-                      <Avatar src={user.image} style={{ margin: "auto" }} />
+                      <Avatar src={user?.profilePicture} style={{ margin: "auto" }} />
                       <Typography variant="body2" style={{ marginTop: "5px" }}>{user.name}</Typography>
                       <Typography variant="body2" style={{ marginTop: "5px", color: "gray" }}>{user.age} | {user.location}</Typography>
                       <div style={{ marginTop: "5px", display: "flex", justifyContent: "center" }}>

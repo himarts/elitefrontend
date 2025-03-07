@@ -6,7 +6,6 @@ export const likeProfile = createAsyncThunk(
   async ({ profileId }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-console.log(profileId)
       const response = await axios.post(
         `http://localhost:9000/api/profiles/likes/${profileId}`,
         {}, // No request body needed
@@ -18,7 +17,6 @@ console.log(profileId)
         }
       );
 
-      console.log(response);
       return response.data;
     } catch (error) {
       console.error("Error in likeProfile:", error);
@@ -43,7 +41,6 @@ export const dislikeProfile = createAsyncThunk(
           },
         }
       );
-      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to dislike profile");
@@ -67,10 +64,9 @@ try {
       },
     }
   );
-  console.log(response)
+  (response)
   return response.data;
 } catch (error) {
-  console.log(error)
   return rejectWithValue(error.response?.data || "Failed to fetch liked users");
   
 }
@@ -89,10 +85,8 @@ export const getDislikedUsers = createAsyncThunk(
           },
         }
       );
-      console.log(response)
       return response.data;
     } catch (error) {
-      console.log(error)
       return rejectWithValue(error.response?.data || "failed to fetched disliked users");
     }
   }

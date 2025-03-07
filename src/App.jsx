@@ -24,7 +24,6 @@ import axios from 'axios';
 //   try {
 //     const response = await axios.get("http://localhost:9000/api/get-location");
 //     // const data = await response.json();
-//     console.log("User Location:", response);
 //   } catch (error) {
 //     console.error("Error getting location:", error);
 //   }

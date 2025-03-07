@@ -1,6 +1,8 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, Avatar, Typography, Divider, Button } from "@mui/material";
 import { FaComment, FaFlag } from "react-icons/fa";
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 const UserProfileModal = ({ open, user, onClose, onOpenChat }) => {
   return (
@@ -9,7 +11,12 @@ const UserProfileModal = ({ open, user, onClose, onOpenChat }) => {
         <>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bold" }}>User Profile</DialogTitle>
           <DialogContent style={{ textAlign: "center" }}>
-            <Avatar src={user.image} style={{ margin: "auto", width: "120px", height: "120px" }} />
+            <Zoom>
+              <Avatar
+                src={user.profilePicture}
+                style={{ margin: "auto", width: "120px", height: "120px", cursor: "pointer" }}
+              />
+            </Zoom>
             <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "10px" }}>{user.name}, {user.age}</Typography>
             <Typography variant="body2" style={{ color: "gray" }}>{user.location}</Typography>
             <Typography variant="body2" style={{ color: user.lastSeen === "Online now" ? "green" : "gray" }}>Last seen: {user.lastSeen}</Typography>

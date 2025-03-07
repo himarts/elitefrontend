@@ -36,8 +36,6 @@ export const getProfile = createAsyncThunk(
   }
 );
 
-
-
 export const getOnlineUsers = createAsyncThunk(
   "profile/getOnlineUsers",
   async (_, { rejectWithValue }) => {
@@ -57,6 +55,24 @@ export const getOnlineUsers = createAsyncThunk(
   }
 );
 
+export const getFriends = createAsyncThunk(
+  "profile/getFriends",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:9000/api/profile/friends", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch data");
+    }
+  }
+);
 
 const profileSlice = createSlice({
   name: "profile",
@@ -114,6 +130,7 @@ const profileSlice = createSlice({
       petType: "",
     },
     onlineUsers: [],
+    friends: [], // Add friends to the initial state
     status: "idle", // idle | loading | succeeded | failed
     error: null,
   },
@@ -154,7 +171,18 @@ const profileSlice = createSlice({
         state.onlineUsers = action.payload;
       })
       .addCase(getOnlineUsers.rejected, (state, action) => {
-        state.status = "failed>>>>";
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getFriends.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getFriends.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.friends = action.payload;
+      })
+      .addCase(getFriends.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload;
       });
   },
