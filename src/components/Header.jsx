@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AppBar, Toolbar, TextField, Typography, IconButton, Badge, Button } from "@mui/material";
 import { FaComments, FaHeart, FaBell, FaSignOutAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import  fetchUnreadMessages  from "../features/measageSlice.js";
+import  {fetchUnreadMessages}  from "../features/measageSlice";
 
 const Header = ({ handleLogout, notificationCount, token }) => {
   const dispatch = useDispatch();

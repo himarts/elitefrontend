@@ -9,9 +9,10 @@ export const fetchUnreadMessages = createAsyncThunk(
 
     try {
       const token = localStorage.getItem("token");   
-      const response = await axios.get("http://localhost:5000/api/messages/unread-messages", {
+      const response = await axios.get("http://localhost:9000/api/chats/unread-messages", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(response)
       return response.data.unreadMessages; // Return unread message count
     } catch (error) {
       console.error("Error fetching unread messages:", error);
