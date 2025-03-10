@@ -1,16 +1,16 @@
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // ✅ Correct import
 
 export const getUserIdFromToken = () => {
-  const token = localStorage.getItem("token"); // Retrieve token from localStorage
-  if (!token) return null; // Handle case where user is not logged in
+  const token = localStorage.getItem("token");
+  if (!token) return null; // User not logged in or token missing
 
   try {
     const decoded = jwtDecode(token);
-    return decoded.userId; // Ensure your token includes `userId`
+    return decoded?.userId || null; // ✅ Ensure `userId` exists, else return `null`
   } catch (error) {
     console.error("Error decoding token:", error);
-    return null;
+    return null; // Return `null` if decoding fails
   }
 };
 
-export default getUserIdFromToken
+export default getUserIdFromToken;

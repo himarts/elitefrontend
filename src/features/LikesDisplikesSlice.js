@@ -1,102 +1,95 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BASE_URL = "http://localhost:9000/api/profiles";
+
+// Like a profile
 export const likeProfile = createAsyncThunk(
   "likesDislikes/likeProfile",
   async ({ profileId }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:9000/api/profiles/likes/${profileId}`,
+        `${BASE_URL}/likes/${profileId}`,
         {}, // No request body needed
         {
           headers: {
-            "Content-Type": "application/json", // ✅ Fix: Ensure JSON headers
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
+console.log(response.data)
       return response.data;
     } catch (error) {
       console.error("Error in likeProfile:", error);
-      return rejectWithValue(error.response?.data || "Failed to like profile");
+      return rejectWithValue(error.response?.data?.message || "Failed to like profile");
     }
   }
 );
 
-
-
+// Dislike a profile
 export const dislikeProfile = createAsyncThunk(
   "likesDislikes/dislikeProfile",
-  async ({ userId, profileId }, { rejectWithValue }) => {
+  async ({ profileId }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:9000/api/profiles/disliked/${ profileId }`,
-       {},
+        `${BASE_URL}/disliked/${profileId}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log(response.data)
+
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to dislike profile");
+      console.error("Error in dislikeProfile:", error);
+      return rejectWithValue(error.response?.data?.message || "Failed to dislike profile");
     }
   }
 );
 
-
-// get all liked users
-
+// Get all liked users
 export const getLikedUsers = createAsyncThunk(
-  "likesDislikes/getLikedUsers",async (userId, { rejectWithValue }) => {
-try {
-  const token = localStorage.getItem("token");
-  const response = await axios.get(
-    `http://localhost:9000/api/profiles/liked`,
-
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  (response)
-  return response.data;
-} catch (error) {
-  return rejectWithValue(error.response?.data || "Failed to fetch liked users");
-  
-}
-  }
-);
-
-export const getDislikedUsers = createAsyncThunk(
-  "likesDislikes/getDislikedUsers" ,async (userId, {rejectWithValue}) => {
+  "likesDislikes/getLikedUsers",
+  async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:9000/api/profiles/disliked`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/liked`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "failed to fetched disliked users");
+      console.error("Error in getLikedUsers:", error);
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch liked users");
     }
   }
-)
+);
 
-
-
-
-
-
+// Get all disliked users
+export const getDislikedUsers = createAsyncThunk(
+  "likesDislikes/getDislikedUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${BASE_URL}/disliked`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error in getDislikedUsers:", error);
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch disliked users");
+    }
+  }
+);
 
 const likesDislikesSlice = createSlice({
   name: "likesDislikes",
@@ -105,8 +98,8 @@ const likesDislikesSlice = createSlice({
     dislikes: [],
     status: "idle", // idle | loading | succeeded | failed
     error: null,
-    allLikedUsers:[],
-    allDislikedUsers:[],
+    allLikedUsers: [],
+    allDislikedUsers: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -138,7 +131,7 @@ const likesDislikesSlice = createSlice({
       })
       .addCase(getLikedUsers.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.allLikedUsers.push(action.payload);
+        state.allLikedUsers = action.payload; // ✅ Set data instead of pushing
       })
       .addCase(getLikedUsers.rejected, (state, action) => {
         state.status = "failed";
@@ -149,7 +142,7 @@ const likesDislikesSlice = createSlice({
       })
       .addCase(getDislikedUsers.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.allDislikedUsers.push(action.payload);
+        state.allDislikedUsers = action.payload; // ✅ Set data instead of pushing
       })
       .addCase(getDislikedUsers.rejected, (state, action) => {
         state.status = "failed";

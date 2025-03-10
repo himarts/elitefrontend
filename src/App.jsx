@@ -19,6 +19,17 @@ import ProgressiveForm from './pages/ProfileProgress.jsx';
 
 import axios from 'axios';
 
+import socket from "../src/utils/socket.js"; // Import your socket.js file
+
+socket.on("connect", () => {
+  console.log("Connected to WebSocket server with ID:", socket.id);
+});
+
+socket.on("connect_error", (err) => {
+  console.error("WebSocket Connection Error:", err.message);
+});
+
+
 
 // const getLocation = async () => {
 //   try {

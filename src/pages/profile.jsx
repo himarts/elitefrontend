@@ -36,9 +36,9 @@ function UserProfile() {
   useEffect(() => {
     dispatch(getOnlineUsers());
     dispatch(getLikedUsers());
-    dispatch(getDislikedUsers());
+    // dispatch(getDislikedUsers());
     dispatch(getProfile());
-    dispatch(getFriends());
+    // dispatch(getFriends());
   }, [dispatch]);
 
   useEffect(() => {
@@ -58,15 +58,19 @@ function UserProfile() {
   }, [allDislikedUsers]);
 
   useEffect(() => {
-    socket.on("notification", (data) => {
+    socket.on("receiveNotification", (data) => {
       setNotificationCount((prevCount) => prevCount + 1);
       setNotification({ open: true, message: data.message });
     });
-
+  
     return () => {
-      socket.off("notification");
+      socket.off("receiveNotification");
     };
   }, []);
+  
+  
+
+  
 
   const handleLogout = () => {
     dispatch(logout());
@@ -106,7 +110,7 @@ function UserProfile() {
       const likedId = user._id;
 
       const response = await axios.post(
-        `http://localhost:9000/api/notification/send-like-notification/${likedId}`,
+        // `http://localhost:9000/api/notification/send-like-notification/${likedId}`,
         {},
         {
           headers: {
@@ -115,7 +119,7 @@ function UserProfile() {
           },
         }
       );
-
+console.log(response)
       if (response.data.success) {
         socket.emit("sendNotification", {
           receiverId: likedId,
@@ -155,7 +159,7 @@ function UserProfile() {
       const dislikedId = user._id;
 
       const response = await axios.post(
-        `http://localhost:9000/api/notification/send-dislike-notification/${dislikedId}`,
+        // `http://localhost:9000/api/notification/send-dislike-notification/${dislikedId}`,
         {},
         {
           headers: {
@@ -164,7 +168,7 @@ function UserProfile() {
           },
         }
       );
-
+console.log(response)
       if (response.data.success) {
         socket.emit("sendNotification", {
           receiverId: dislikedId,
