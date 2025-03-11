@@ -4,19 +4,56 @@ import axios from "axios";
 // **Async Thunk to Fetch Unread Messages**
 export const fetchUnreadMessages = createAsyncThunk(
   "messages/fetchUnread",
-  async (token, { rejectWithValue }) => {
-
-
+  async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");   
       const response = await axios.get("http://localhost:9000/api/chats/unread-messages", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(response)
+      console.log(response);
       return response.data.unreadMessages; // Return unread message count
     } catch (error) {
       console.error("Error fetching unread messages:", error);
       return rejectWithValue(error.response?.data || "Failed to fetch unread messages");
+    }
+  }
+);
+
+// **✅ Convert `markMessagesAsRead` to an Async Thunk**
+export const markMessagesAsRead = createAsyncThunk(
+  "messages/markAsRead",
+  async (senderId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");   
+      await axios.put(
+        "http://localhost:9000/api/chats/read",
+        { senderId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return senderId; // Return sender ID (optional)
+    } catch (error) {
+      console.error("Failed to mark messages as read:", error);
+      return rejectWithValue(error.response?.data || "Failed to mark messages as read");
+    }
+  }
+);
+
+
+export const resetUnreadMessages = createAsyncThunk(
+  "messages/resetUnread",
+  async (senderId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");   
+      const response = await axios.put(
+        `http://localhost:9000/api/chats/reset-unread-messages`,
+        {senderId},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(response)
+      return response.data.message; // Return success message
+    } catch (error) {
+      console.error("Error resetting unread messages:", error);
+      return rejectWithValue(error.response?.data || "Failed to reset unread messages");
     }
   }
 );
@@ -47,6 +84,20 @@ const messageSlice = createSlice({
         state.unreadCount = action.payload;
       })
       .addCase(fetchUnreadMessages.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state) => {
+        state.unreadCount = 0; // Reset unread count after marking as read
+      })
+      .addCase(markMessagesAsRead.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetUnreadMessages.fulfilled, (state) => {
+        state.unreadCount = 0; // Reset unread count to 0
+      })
+      .addCase(resetUnreadMessages.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

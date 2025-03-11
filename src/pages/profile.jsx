@@ -13,6 +13,8 @@ import UserProfileModal from "../components/UserProfileModal";
 import Header from "../components/Header";
 import socket from "../utils/socket";
 import UserPhotoAndInfo from "../components/UserPhotoAndInfo";
+import {markMessagesAsRead, resetUnreadCount} from "../features/measageSlice";
+
 
 function UserProfile() {
   const [likedUsers, setLikedUsers] = useState({});
@@ -119,7 +121,6 @@ function UserProfile() {
           },
         }
       );
-console.log(response)
       if (response.data.success) {
         socket.emit("sendNotification", {
           receiverId: likedId,
@@ -168,7 +169,6 @@ console.log(response)
           },
         }
       );
-console.log(response)
       if (response.data.success) {
         socket.emit("sendNotification", {
           receiverId: dislikedId,
@@ -186,7 +186,9 @@ console.log(response)
   };
 
   const handleOpenChat = () => {
-    setOpenModal(false);
+    dispatch(markMessagesAsRead(selectedUser?._id));
+    dispatch(resetUnreadCount(selectedUser?._id));
+    setOpenModal(false);    
     setOpenChat(true);
   };
 
