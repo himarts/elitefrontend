@@ -4,6 +4,7 @@ import resetReducer from "./resetSlice.js";
 import profileReducer from "./profileSlice.js";
 import likesDislikesReducer from './LikesDisplikesSlice.js';
 import messageReducer  from "./measageSlice.js";
+import notificationReducer from "./notificationSlice.js";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -11,6 +12,7 @@ const store = configureStore({
     profile:profileReducer,
     likesDislikes: likesDislikesReducer,
     messages: messageReducer,
+    notifications: notificationReducer
   },
 });
 

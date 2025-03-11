@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import { Avatar, Typography, Paper, IconButton, TextField } from "@mui/material";
 import { FaTimes, FaPaperPlane } from "react-icons/fa";
 import socket from "../utils/socket.js"; 
@@ -15,7 +14,6 @@ function ChatWindow({ user, onClose, messages, setMessages }) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
-  
 
   useEffect(() => {
     const handleReceiveMessage = (message) => {
@@ -27,7 +25,6 @@ function ChatWindow({ user, onClose, messages, setMessages }) {
           ...(prev[message.senderId] || []),
           { text: message.message, sender: "them" },
         ],
-
       }));
       setTimeout(scrollToBottom, 100);
     };
@@ -54,7 +51,7 @@ function ChatWindow({ user, onClose, messages, setMessages }) {
           ...prev,
           [user._id]: response.data.map((msg) => ({
             text: msg.message,
-            sender: msg.sender === localStorage.getItem("userId") ? "me" : "them",
+            sender: msg.sender === getUserIdFromToken() ? "me" : "them",
           })),
         }));
         setTimeout(scrollToBottom, 100);
@@ -117,22 +114,25 @@ function ChatWindow({ user, onClose, messages, setMessages }) {
         </IconButton>
       </div>
 
-      <div ref={chatContainerRef}  style={{ padding: "10px", height: "280px", overflowY: "auto" }}>
+      <div ref={chatContainerRef} style={{ padding: "10px", height: "280px", overflowY: "auto", display: "flex", flexDirection: "column" }}>
         {messages[user._id]?.length > 0 ? (
           messages[user._id].map((msg, index) => (
-            <div key={index} style={{ textAlign: msg.sender === "me" ? "right" : "left" }}>
-              <Typography
-                variant="body2"
+            <div key={index} style={{
+              display: "flex",
+              justifyContent: msg.sender === "me" ? "flex-end" : "flex-start", // Align left or right
+              marginBottom: "5px",
+            }}>
+              <div
                 style={{
-                  backgroundColor: msg.sender === "me" ? "#dcf8c6" : "#eee",
-                  padding: "5px 10px",
+                  maxWidth: "80%",
+                  padding: "6px 10px",
                   borderRadius: "10px",
-                  display: "inline-block",
-                  margin: "3px",
+                  backgroundColor: msg.sender === "me" ? "#ff3366" : "rgb(149 131 131", // Different colors
+                  color: msg.sender === "me" ? "#fff" : "#fff",
                 }}
               >
-                {msg.text}
-              </Typography>
+                <Typography variant="body2">{msg.text}</Typography>
+              </div>
             </div>
           ))
         ) : (
@@ -142,7 +142,7 @@ function ChatWindow({ user, onClose, messages, setMessages }) {
         )}
       </div>
 
-      <div  style={{ display: "flex", padding: "-30px" }}>
+      <div style={{ display: "flex", padding: "10px" }}>
         <TextField
           fullWidth
           size="small"

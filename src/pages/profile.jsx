@@ -6,9 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { checkProfileCompletion } from "../features/authSlice.js";
-import { likeProfile, dislikeProfile, getDislikedUsers, getLikedUsers } from '../features/LikesDisplikesSlice.js';
-import { getOnlineUsers, getProfile, getFriends } from "../features/profileSlice.js";
-import axios from "axios";
+import { likeProfile, dislikeProfile } from '../features/LikesDisplikesSlice.js';
+import { getOnlineUsers, getProfile } from "../features/profileSlice.js";
 import UserProfileModal from "../components/UserProfileModal";
 import Header from "../components/Header";
 import socket from "../utils/socket";
@@ -37,10 +36,8 @@ function UserProfile() {
 
   useEffect(() => {
     dispatch(getOnlineUsers());
-    dispatch(getLikedUsers());
-    // dispatch(getDislikedUsers());
+ 
     dispatch(getProfile());
-    // dispatch(getFriends());
   }, [dispatch]);
 
   useEffect(() => {
@@ -103,33 +100,6 @@ function UserProfile() {
     }));
 
     dispatch(likeProfile({ profileId: user._id }));
-
-    // Send like notification
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No authentication token found");
-
-      const likedId = user._id;
-
-      const response = await axios.post(
-        // `http://localhost:9000/api/notification/send-like-notification/${likedId}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        socket.emit("sendNotification", {
-          receiverId: likedId,
-          message: "Someone liked your profile!",
-        });
-      }
-    } catch (error) {
-      console.error("Error sending like notification:", error);
-    }
   };
 
   const handleDislikes = async (event, user) => {
@@ -151,33 +121,6 @@ function UserProfile() {
     }));
 
     dispatch(dislikeProfile({ profileId: user._id }));
-
-    // Send dislike notification
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No authentication token found");
-
-      const dislikedId = user._id;
-
-      const response = await axios.post(
-        // `http://localhost:9000/api/notification/send-dislike-notification/${dislikedId}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        socket.emit("sendNotification", {
-          receiverId: dislikedId,
-          message: "Someone disliked your profile!",
-        });
-      }
-    } catch (error) {
-      console.error("Error sending dislike notification:", error);
-    }
   };
 
   const handleCloseModal = () => {

@@ -63,6 +63,7 @@ const messageSlice = createSlice({
   name: "messages",
   initialState: {
     unreadCount: 0,
+    notifications: [],
     status: "idle", // "idle" | "loading" | "succeeded" | "failed"
     error: null,
   },
@@ -72,6 +73,9 @@ const messageSlice = createSlice({
     },
     resetUnreadCount: (state) => {
       state.unreadCount = 0; // Reset unread count when messages are read
+    },
+    setNotifications: (state, action) => {
+      state.notifications = action.payload;  // ✅ Make sure to update notifications
     },
   },
   extraReducers: (builder) => {
